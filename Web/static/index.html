@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>TreeSense - YOLOv8n Inference</title>
+  </head>
+  <body>
+    <h1>TreeSense - YOLOv8n Inference</h1>
+    <p>Upload an image and the server will return an annotated image and the number of detected trees.</p>
+
+    <form id="upload-form">
+      <input type="file" id="file-input" name="file" accept="image/*" required />
+      <button type="submit">Analyze</button>
+    </form>
+
+    <h3>Results</h3>
+    <div id="result">
+      <p id="count">No result yet.</p>
+      <img id="annotated" alt="Annotated result will appear here" style="max-width:90%; height:auto; display:block;" />
+    </div>
+
+    <script>
+      const form = document.getElementById('upload-form');
+      const fileInput = document.getElementById('file-input');
+      const annotated = document.getElementById('annotated');
+      const countP = document.getElementById('count');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!fileInput.files || fileInput.files.length === 0) return;
+        const file = fileInput.files[0];
+        const fd = new FormData();
+        fd.append('file', file, file.name);
+        countP.textContent = 'Analyzing...';
+        annotated.src = '';
+
+        try {
+          const resp = await fetch('/predict', { method: 'POST', body: fd });
+          if (!resp.ok) {
+            const text = await resp.text();
+            countP.textContent = 'Error: ' + resp.status + ' - ' + text;
+            return;
+          }
+          const data = await resp.json();
+          countP.textContent = 'Detected trees (or detections): ' + data.count;
+          annotated.src = data.annotated_image;
+        } catch (err) {
+          countP.textContent = 'Request failed: ' + err;
+        }
+      });
+    </script>
+  </body>
+</html>
