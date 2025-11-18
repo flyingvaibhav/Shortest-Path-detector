@@ -2,349 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TreeSense - Smart Tree Counter</title>
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TreeSense — DualSystem</title>
   <style>
-    :root {
-      --bg: #040606;
-      --panel: #0c1a12;
-      --accent: #2ee06a;
-      --accent-soft: #20b55b;
-      --text: #c8e7d3;
-      --muted: #9bc8ad;
-      --border: rgba(255,255,255,0.08);
+    :root{
+      --bg:#050706; /* near-black */
+      --panel:#0b1a11; /* dark green-black */
+      --accent:#2ee06a; /* bright green */
+      --muted:#94caa4;
+      --glass: rgba(255,255,255,0.03);
     }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg) 0%, #06120a 100%);color:var(--muted)}
+    .center-wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px}
+    .card{width:960px;max-width:95%;background:linear-gradient(180deg,var(--panel),rgba(0,0,0,0.2));border-radius:14px;padding:40px;box-shadow:0 10px 40px rgba(0,0,0,0.6);backdrop-filter:blur(6px);border:1px solid rgba(46,224,106,0.06)}
+    .title{display:flex;align-items:center;gap:16px}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#0ab24a);display:flex;align-items:center;justify-content:center;color:#02220f;font-weight:700;font-size:20px;box-shadow:0 6px 18px rgba(46,224,106,0.12)}
+    h1{margin:0;font-size:34px;color:var(--accent);letter-spacing:0.4px}
+    p.lead{margin:8px 0 24px;color:var(--muted);font-size:16px}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* floating buttons center */
+    .modes{display:flex;gap:28px;justify-content:center;align-items:center;margin-top:18px}
+    .mode-btn{position:relative;width:220px;height:220px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:transform .28s ease, box-shadow .28s ease}
+    .mode-btn:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+    .mode-btn .label{margin-top:12px;font-weight:700;color:var(--accent)}
+    .mode-btn .sub{font-size:13px;color:var(--muted);margin-top:6px}
 
-    body {
-      font-family: Inter, Segoe UI, Arial, sans-serif;
-      background: radial-gradient(circle at top, #07150e, #030705 60%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      color: var(--text);
-    }
+    .mode-jungle{background:radial-gradient(circle at 30% 20%, rgba(46,224,106,0.06), transparent 25%), linear-gradient(180deg,#07140b,#021006)}
+    .mode-urban{background:radial-gradient(circle at 70% 80%, rgba(46,224,106,0.05), transparent 30%), linear-gradient(180deg,#081217,#031015)}
 
-    /* ========== MAIN TWO-PANEL LAYOUT ========== */
-    .container {
-      display: flex;
-      width: 100%;
-      max-width: 1400px;
-      gap: 20px;
-      justify-content: center;
-      align-items: flex-start;
-    }
+    .cta-row{display:flex;justify-content:center;margin-top:30px}
+    .small{font-size:13px;color:rgba(148,202,164,0.9)}
 
-    /* ========== LEFT PANEL (Input) ========== */
-    .left-panel {
-      width: 100%;
-      max-width: 650px;
-      background: var(--panel);
-      border-radius: 18px;
-      padding: 40px;
-      border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    /* floating center container for the two buttons */
+    .floating{display:flex;gap:28px;align-items:center;justify-content:center}
 
-    h2 {
-      font-size: 28px;
-      color: var(--accent);
-      font-weight: 800;
-      margin-bottom: 6px;
-      text-align: left;
-      width: 100%;
-    }
-
-    .mode-badge {
-      background: rgba(46,224,106,0.15);
-      padding: 4px 10px;
-      border-radius: 40px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
-      margin-left: 6px;
-    }
-
-    p.lead {
-      color: var(--muted);
-      font-size: 15px;
-      margin-bottom: 10px;
-      text-align: left;
-      width: 100%;
-    }
-
-    /* ========== FIXED DROPZONE ========== */
-    .dropzone {
-      width: 100%;
-      height: 220px;
-      border: 2px dashed var(--accent-soft);
-      background: rgba(46,224,106,0.05);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.3s;
-      margin-top: 20px;
-    }
-
-    .dropzone:hover {
-      background: rgba(46,224,106,0.12);
-    }
-
-    #previewImg,
-    #previewVideo {
-      width: 100%;
-      margin-top: 25px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      display: none;
-    }
-
-    /* Buttons */
-    .controls {
-      margin-top: 20px;
-      display: flex;
-      gap: 12px;
-      width: 100%;
-    }
-
-    button {
-      padding: 12px 20px;
-      border-radius: 10px;
-      border: none;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button.primary {
-      background: var(--accent);
-      color: #06250f;
-    }
-
-    button.primary:hover {
-      background: var(--accent-soft);
-    }
-
-    button.secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-
-    /* ========== RIGHT PANEL (Output) ========== */
-    .right-panel {
-      flex: 1;
-      background: var(--panel);
-      border-radius: 18px;
-      padding: 30px;
-      border: 1px solid var(--border);
-      display: none; /* hidden initially */
-      flex-direction: column;
-    }
-
-    #logs {
-      background: #07150d;
-      padding: 15px;
-      border-radius: 12px;
-      font-size: 13px;
-      height: 250px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-      line-height: 1.6;
-      border: 1px solid var(--border);
-      white-space: pre-line;
-    }
-
-    #annotated, #videoResult {
-      width: 100%;
-      margin-top: 10px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      display: none;
-    }
-
-    #count {
-      font-size: 18px;
-      font-weight: 700;
-      margin-top: 10px;
-    }
+    @media (max-width:640px){.modes{flex-direction:column}.mode-btn{width:160px;height:160px}}
   </style>
 </head>
-
 <body>
+  <div class="center-wrap">
+    <div class="card">
+      <div class="title">
+        <div class="logo">TS</div>
+        <div>
+          <h1>TreeSense</h1>
+          <p class="lead">DualSystem for enviornment monitoring <strong>#natures doctor</strong></p>
+        </div>
+      </div>
 
-<div class="container">
+      <p class="small">Choose a mode to continue. <em>Jungle Mode</em> focuses on dense natural settings. <em>Urban Mode</em> switches to the tree detection interface.</p>
 
-  <!-- LEFT INPUT PANEL -->
-  <div class="left-panel">
-    <h2>🌲 TreeSense <span class="mode-badge">Urban Mode</span></h2>
-    <p class="lead">Upload an image or video to begin.</p>
+      <div class="modes">
+        <div class="mode-btn mode-jungle" id="jungleBtn" title="Jungle Mode">
+          <svg width="58" height="58" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C12 2 9 7 6 9C3 11 4 12 4 12H20C20 12 21 11 18 9C15 7 12 2 12 2Z" fill="#8ef0a6" opacity="0.95"/><path d="M6 20C6 20 8 16 12 16C16 16 18 20 18 20H6Z" fill="#2ee06a"/></svg>
+          <div class="label">Jungle Mode</div>
+          <div class="sub">Nature-oriented</div>
+        </div>
 
-    <label class="dropzone" id="dropzone">
-      <input id="fileInput" type="file" accept="image/*,video/*" hidden>
-      <p style="color:var(--muted); font-size:16px;">Click or Drag & Drop</p>
-    </label>
+        <div class="mode-btn mode-urban" id="urbanBtn" title="Urban Mode">
+          <svg width="58" height="58" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="7" width="4" height="10" rx="0.5" fill="#8ef0a6"/><rect x="10" y="4" width="4" height="13" rx="0.5" fill="#2ee06a"/><rect x="17" y="9" width="4" height="8" rx="0.5" fill="#7fe89a"/></svg>
+          <div class="label">Urban Mode</div>
+          <div class="sub">Tree Detection</div>
+        </div>
+      </div>
 
-    <img id="previewImg">
-    <video id="previewVideo" controls></video>
-
-    <div class="controls">
-      <button class="primary" id="startBtn">Start Detection</button>
-      <button class="secondary" id="clearBtn">Clear</button>
+      <div class="cta-row">
+        <div class="small">Built with YOLO — quick, privacy-friendly detection.</div>
+      </div>
     </div>
   </div>
 
-  <!-- RIGHT OUTPUT PANEL -->
-  <div class="right-panel" id="outputPanel">
-    <div id="logs">Waiting for detection...</div>
-    <p id="count"></p>
-    <img id="annotated">
-    <video id="videoResult" controls></video>
+  <script>
+    // Urban Mode redirects to /detect (existing detection page)
+    document.getElementById('urbanBtn').addEventListener('click', ()=>{
+      window.location.href = '/detect';
+    });
 
-    <a id="downloadLink"
-       style="display:none;margin-top:12px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);color:inherit;text-decoration:none;"
-       download>Download</a>
-  </div>
-
-</div>
-
-<!-- ========== JAVASCRIPT ========== -->
-<script>
-const input = document.getElementById("fileInput");
-const dropzone = document.getElementById("dropzone");
-const startBtn = document.getElementById("startBtn");
-const clearBtn = document.getElementById("clearBtn");
-const previewImg = document.getElementById("previewImg");
-const previewVideo = document.getElementById("previewVideo");
-const outputPanel = document.getElementById("outputPanel");
-const logs = document.getElementById("logs");
-const annotatedImg = document.getElementById("annotated");
-const videoResult = document.getElementById("videoResult");
-const downloadLink = document.getElementById("downloadLink");
-const countTag = document.getElementById("count");
-
-let currentSrc = null;
-
-/* DRAG & DROP + PREVIEW */
-dropzone.onclick = () => input.click();
-
-dropzone.addEventListener("dragover", e => {
-  e.preventDefault();
-  dropzone.style.background = "rgba(46,224,106,0.15)";
-});
-
-dropzone.addEventListener("dragleave", () => {
-  dropzone.style.background = "rgba(46,224,106,0.05)";
-});
-
-dropzone.addEventListener("drop", e => {
-  e.preventDefault();
-  input.files = e.dataTransfer.files;
-  handlePreview();
-});
-
-input.addEventListener("change", handlePreview);
-
-function handlePreview() {
-  const file = input.files[0];
-  if (!file) return;
-
-  if (currentSrc) URL.revokeObjectURL(currentSrc);
-  currentSrc = URL.createObjectURL(file);
-
-  previewImg.style.display = "none";
-  previewVideo.style.display = "none";
-
-  if (file.type.startsWith("image/")) {
-    previewImg.src = currentSrc;
-    previewImg.style.display = "block";
-  } else {
-    previewVideo.src = currentSrc;
-    previewVideo.style.display = "block";
-  }
-}
-
-/* CLEAR EVERYTHING */
-clearBtn.onclick = () => {
-  input.value = "";
-  previewImg.style.display = "none";
-  previewVideo.style.display = "none";
-  annotatedImg.style.display = "none";
-  videoResult.style.display = "none";
-
-  outputPanel.style.display = "none"; /* hide again */
-
-  logs.textContent = "Waiting for detection...";
-  countTag.textContent = "";
-};
-
-/* START DETECTION */
-startBtn.onclick = async () => {
-  const file = input.files[0];
-  if (!file) {
-    alert("Please upload a file first.");
-    return;
-  }
-
-  outputPanel.style.display = "flex";
-  logs.textContent = "Uploading file...";
-
-  const form = new FormData();
-  form.append("file", file);
-
-  const res = await fetch("/upload", { method: "POST", body: form });
-  const data = await res.json();
-  const jobId = data.job_id;
-
-  logs.textContent = "Processing started...\n";
-
-  const evt = new EventSource("/progress/" + jobId);
-  evt.onmessage = e => {
-    const obj = JSON.parse(e.data);
-
-    if (obj.log) logs.textContent += obj.log + "\n";
-
-    if (obj.status === "done") {
-      evt.close();
-      fetchResult(jobId);
-    }
-  };
-};
-
-/* FETCH FINAL RESULTS */
-async function fetchResult(jobId) {
-  logs.textContent += "Fetching results...\n";
-
-  const res = await fetch("/result/" + jobId);
-  const data = await res.json();
-
-  if (data.type === "image") {
-    annotatedImg.src = data.annotated_image_base64;
-    annotatedImg.style.display = "block";
-    countTag.textContent = "Count: " + data.count;
-    downloadLink.href = data.output_image_url;
-  }
-
-  if (data.type === "video") {
-    videoResult.src = data.output_video_url;
-    videoResult.style.display = "block";
-    countTag.textContent = "Count: " + data.unique_tree_count;
-    downloadLink.href = data.output_video_url;
-  }
-
-  downloadLink.style.display = "inline-block";
-  logs.textContent += "Done.\n";
-}
-</script>
-
+    // Jungle Mode is currently informational; you can extend it later
+    document.getElementById('jungleBtn').addEventListener('click', ()=>{
+      // small feedback effect
+      const el = document.getElementById('jungleBtn');
+      el.style.transform = 'scale(0.98)';
+      setTimeout(()=> el.style.transform = '', 120);
+      alert('Jungle Mode selected — feature coming soon.');
+    });
+  </script>
 </body>
 </html>

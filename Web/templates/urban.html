@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TreeSense - Smart Tree Counter</title>
+
+  <style>
+    :root {
+      --bg: #040606;
+      --panel: #0c1a12;
+      --accent: #2ee06a;
+      --accent-soft: #20b55b;
+      --text: #c8e7d3;
+      --muted: #9bc8ad;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: radial-gradient(circle at top, #07150e, #030705 60%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--text);
+    }
+
+    /* ========== MAIN TWO-PANEL LAYOUT ========== */
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1400px;
+      gap: 20px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* ========== LEFT PANEL (Input) ========== */
+    .left-panel {
+      width: 100%;
+      max-width: 650px;
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 40px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      font-size: 28px;
+      color: var(--accent);
+      font-weight: 800;
+      margin-bottom: 6px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .mode-badge {
+      background: rgba(46,224,106,0.15);
+      padding: 4px 10px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-left: 6px;
+    }
+
+    p.lead {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 10px;
+      text-align: left;
+      width: 100%;
+    }
+
+    /* ========== FIXED DROPZONE ========== */
+    .dropzone {
+      width: 100%;
+      height: 220px;
+      border: 2px dashed var(--accent-soft);
+      background: rgba(46,224,106,0.05);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 20px;
+    }
+
+    .dropzone:hover {
+      background: rgba(46,224,106,0.12);
+    }
+
+    #previewImg,
+    #previewVideo {
+      width: 100%;
+      margin-top: 25px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: none;
+    }
+
+    /* Buttons */
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    button {
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #06250f;
+    }
+
+    button.primary:hover {
+      background: var(--accent-soft);
+    }
+
+    button.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ========== RIGHT PANEL (Output) ========== */
+    .right-panel {
+      flex: 1;
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 30px;
+      border: 1px solid var(--border);
+      display: none; /* hidden initially */
+      flex-direction: column;
+    }
+
+    .status-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .status-header strong {
+      color: var(--accent);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), #3beb89);
+      transition: width 0.2s ease;
+    }
+
+    #logs {
+      background: #07150d;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 13px;
+      height: 250px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      line-height: 1.6;
+      border: 1px solid var(--border);
+      white-space: pre-line;
+    }
+
+    #annotated, #videoResult {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: none;
+    }
+
+    #count {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LEFT INPUT PANEL -->
+  <div class="left-panel">
+    <h2>🌲 TreeSense <span class="mode-badge">Urban Mode</span></h2>
+    <p class="lead">Upload an image or video to begin.</p>
+
+    <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload image or video">
+      <p style="color:var(--muted); font-size:16px;">Click or Drag & Drop</p>
+    </div>
+    <input id="fileInput" type="file" accept="image/*,video/*" hidden>
+
+    <img id="previewImg">
+    <video id="previewVideo" controls></video>
+
+    <div class="controls">
+      <button class="primary" id="startBtn">Start Detection</button>
+      <button class="secondary" id="clearBtn">Clear</button>
+    </div>
+  </div>
+
+  <!-- RIGHT OUTPUT PANEL -->
+  <div class="right-panel" id="outputPanel">
+    <div class="status-header">
+      <strong>Pipeline Status</strong>
+      <div class="progress-track">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <span id="statusLabel" style="font-size:13px;color:var(--muted);">Idle</span>
+    </div>
+    <div id="logs">Waiting for detection...</div>
+    <p id="count"></p>
+    <img id="annotated">
+    <video id="videoResult" controls></video>
+
+    <a id="downloadLink"
+       style="display:none;margin-top:12px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);color:inherit;text-decoration:none;"
+       download>Download</a>
+  </div>
+
+</div>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script type="module" src="/static/script.js"></script>
+
+</body>
+</html>
