@@ -57,6 +57,12 @@ async def detect_ui(request: Request):
     return templates.TemplateResponse("urban.html", {"request": request})
 
 
+@router.get("/urbananalysis", response_class=HTMLResponse)
+async def urban_analysis(request: Request):
+    templates = request.app.state.templates
+    return templates.TemplateResponse("urbananalysis.html", {"request": request})
+
+
 @router.get("/progress/{job_id}")
 async def progress_stream(request: Request, job_id: str):
     _, job_store, _ = _get_dependencies(request)

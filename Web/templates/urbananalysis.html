@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TreeSense · Urban Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <style>
+    body {
+      font-family: "Inter", Segoe UI, system-ui, -apple-system, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      background: radial-gradient(circle at top, #102e1c 0%, rgba(0, 0, 0, 0) 45%), #010604;
+      color: #e1f6ec;
+    }
+    .glass-panel {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(3, 12, 8, 0.75);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.65);
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      padding: 0.65rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    th {
+      font-weight: 600;
+    }
+    .badge-light {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .oxygen-container {
+      border: 1px solid rgba(75, 235, 135, 0.3);
+      background: linear-gradient(135deg, rgba(13, 47, 31, 0.85), rgba(5, 20, 13, 0.95));
+    }
+    .oxygen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .oxygen-header h2 {
+      font-size: 1.35rem;
+      margin: 0;
+    }
+    .info-icon {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-style: normal;
+    }
+    .info-icon:hover .info-tooltip,
+    .info-icon:focus-within .info-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -12px);
+    }
+    .info-tooltip {
+      position: absolute;
+      left: 50%;
+      top: 115%;
+      transform: translate(-50%, 0);
+      background: rgba(5, 18, 11, 0.95);
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 300px;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 5;
+    }
+    .oxygen-value {
+      margin: 1.25rem 0;
+    }
+    .value-number {
+      font-size: 2.1rem;
+      font-weight: 600;
+      display: block;
+    }
+    .value-subtext {
+      font-size: 0.9rem;
+      color: #b2d3c2;
+    }
+    .oxygen-status {
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      font-weight: 500;
+    }
+    .oxygen-status.status-good {
+      background: rgba(46, 224, 106, 0.1);
+      color: #60ffb3;
+    }
+    .oxygen-status.status-warning {
+      background: rgba(255, 193, 7, 0.12);
+      color: #ffd966;
+    }
+    .oxygen-status.status-low {
+      background: rgba(255, 77, 79, 0.12);
+      color: #ff9c9c;
+    }
+    .oxygen-range {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #d0e5da;
+    }
+    .pm-container {
+      border: 1px solid rgba(46, 224, 106, 0.25);
+      background: #0b1a11;
+      color: #f1f1f1;
+    }
+    .pm-container h2,
+    .pm-container h3 {
+      color: #2ee06a;
+      margin-bottom: 0.5rem;
+    }
+    .pm-note {
+      background: #111e16;
+      padding: 16px;
+      border-radius: 12px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .pm-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .pm-stat-card {
+      background: rgba(34, 77, 54, 0.8);
+      border: 1px solid rgba(46, 224, 106, 0.3);
+      border-radius: 0.85rem;
+      padding: 0.75rem 0.9rem;
+    }
+    .pm-stat-card h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8ed6ab;
+      margin: 0 0 0.35rem;
+    }
+    .pm-stat-card span {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div>
+        <p class="text-uppercase text-success-50 mb-1" style="letter-spacing: 0.4em; font-size: 0.7rem;">TreeSense</p>
+        <h1 class="mb-0 fw-semibold">Urban Carbon Analysis</h1>
+        <p class="text-secondary-emphasis mb-0" style="color:#b2d3c2;">Stored vs annual CO2 estimations for your latest run.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/detect" class="btn btn-outline-light">Back to Detection</a>
+      </div>
+    </div>
+
+    <div id="missingState" class="glass-panel rounded-4 p-5 text-center" style="display:none;">
+      <h2 class="h4 mb-3">No analysis available yet</h2>
+      <p class="mb-4 text-muted">Run an urban detection first, then use the "Show Analysis" button to view metrics here.</p>
+      <a href="/detect" class="btn btn-success">Go to Urban Mode</a>
+    </div>
+
+    <div id="analysisLayout" class="row g-4" style="display:none;">
+      <div class="col-lg-5 d-flex flex-column gap-4">
+        <div class="glass-panel rounded-4 p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="badge-light">Latest run</span>
+            <span id="analysisTimestamp" class="text-muted" style="font-size:0.85rem;"></span>
+          </div>
+          <h2 class="h3 mb-1">
+            Detected Trees: <span id="treeCount" class="text-success">--</span>
+          </h2>
+          <p class="text-muted mb-3">Mode: <span id="resultType">--</span></p>
+          <div id="mediaSlot" class="rounded-3 overflow-hidden border border-success-subtle" style="min-height:240px; background:#07150d;"></div>
+          <a id="downloadResult" class="btn btn-outline-success w-100 mt-4" href="#" download style="display:none;">Download Annotated Output</a>
+        </div>
+
+        <div id="pmPanel" class="glass-panel rounded-4 p-4 pm-container" style="display:none;">
+          <h2 class="d-flex align-items-center gap-2" style="margin-bottom:12px;">
+            <span role="img" aria-label="leaf">🍃</span> Tree Pollution Capture Report
+          </h2>
+
+          <p class="mb-2">🌳 <strong>Trees Detected:</strong> <span id="pmTreeCount">--</span></p>
+
+          <div class="pm-stat-grid">
+            <div class="pm-stat-card">
+              <h4>Low Estimate</h4>
+              <span id="pmLowEstimate">--</span>
+            </div>
+            <div class="pm-stat-card">
+              <h4>Typical</h4>
+              <span id="pmTypicalEstimate">--</span>
+            </div>
+            <div class="pm-stat-card">
+              <h4>High Estimate</h4>
+              <span id="pmHighEstimate">--</span>
+            </div>
+          </div>
+          <h3 class="mt-3">📝 Summary &amp; Recommendation</h3>
+          <div class="pm-note" id="pmNarrative">
+            Data will appear here after a detection run.
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-7">
+        <div id="oxygenPanel" class="glass-panel rounded-4 p-4 oxygen-container mb-4" style="display:none;">
+          <div class="oxygen-header">
+            <h2>Oxygen Production</h2>
+            <div class="info-icon" tabindex="0">
+              i
+              <div class="info-tooltip">
+                <strong>Tree Age Reference</strong><br />
+                Young: under 5 yrs, low canopy → <b>5–20 kg O₂/yr</b><br />
+                Medium: 5–20 yrs, expanding canopy → <b>40–80 kg O₂/yr</b><br />
+                Mature: 20+ yrs, full canopy → <b>100–120 kg O₂/yr</b><br /><br />
+                Pick the age that best matches your detected trees.
+              </div>
+            </div>
+          </div>
+
+          <div class="oxygen-value">
+            <span id="oxygenValue" class="value-number">--</span>
+            <span class="value-subtext">Oxygen produced per year</span>
+          </div>
+
+          <div id="oxygenStatus" class="oxygen-status status-good">
+            This amount of oxygen is healthy for the environment.
+          </div>
+          <p id="oxygenRange" class="oxygen-range mb-0"></p>
+        </div>
+
+        <div class="glass-panel rounded-4 p-4 mb-4">
+          <h3 class="h5 mb-3">Stored CO2 Inventory</h3>
+          <table>
+            <thead style="background:#143625;">
+              <tr>
+                <th>Tree Size Assumption</th>
+                <th>Biomass per Tree (kg)</th>
+                <th>CO2 per Tree (kg)</th>
+                <th>Total CO2 Stored</th>
+              </tr>
+            </thead>
+            <tbody id="storedTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="glass-panel rounded-4 p-4 mb-4">
+          <h3 class="h5 mb-3">Annual CO2 Removal</h3>
+          <table>
+            <thead style="background:#0f263d;">
+              <tr>
+                <th>Annual Uptake</th>
+                <th>CO2 per Tree (kg/year)</th>
+                <th>Total CO2 Removed per Year</th>
+              </tr>
+            </thead>
+            <tbody id="annualTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "treesenseUrbanResult";
+    const STOCK_LABELS = ["Small", "Medium", "Large", "Very Large"];
+    const ANNUAL_LABELS = ["Low", "Medium", "High"];
+
+    const storedPayload = readStoredPayload();
+    if (!storedPayload || !storedPayload.carbon_report) {
+      document.getElementById("missingState").style.display = "block";
+    } else {
+      document.getElementById("analysisLayout").style.display = "flex";
+      hydrateSummary(storedPayload);
+      populateStockTable(storedPayload);
+      populateAnnualTable(storedPayload);
+      hydrateOxygenCard(storedPayload);
+      hydratePmCard(storedPayload);
+    }
+
+    function readStoredPayload() {
+      if (!window.sessionStorage) {
+        return null;
+      }
+      try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (error) {
+        console.warn("Unable to parse stored analysis", error);
+        return null;
+      }
+    }
+
+    function hydrateSummary(payload) {
+      document.getElementById("treeCount").textContent = payload.tree_count ?? payload.count ?? payload.unique_tree_count ?? "--";
+      document.getElementById("resultType").textContent = payload.type === "video" ? "Video" : "Image";
+      document.getElementById("analysisTimestamp").textContent = payload.stored_at ? new Date(payload.stored_at).toLocaleString() : "just now";
+
+      const mediaSlot = document.getElementById("mediaSlot");
+      mediaSlot.innerHTML = "";
+      if (payload.type === "video" && payload.output_video_url) {
+        const video = document.createElement("video");
+        video.src = payload.output_video_url;
+        video.controls = true;
+        video.className = "w-100";
+        video.style.minHeight = "240px";
+        mediaSlot.appendChild(video);
+        setupDownload(payload.output_video_url);
+      } else if (payload.annotated_image_base64) {
+        const img = document.createElement("img");
+        img.src = payload.annotated_image_base64;
+        img.alt = "Annotated detections";
+        img.className = "w-100";
+        mediaSlot.appendChild(img);
+        setupDownload(payload.output_image_url);
+      } else {
+        mediaSlot.innerHTML = '<p class="text-center text-muted py-5">Annotated preview unavailable.</p>';
+      }
+    }
+
+    function populateStockTable(payload) {
+      const body = document.getElementById("storedTableBody");
+      body.innerHTML = "";
+      const report = payload.carbon_report.stock;
+      report.assumptions_biomass.forEach((biomass, index) => {
+        const label = STOCK_LABELS[index] || `Size ${index + 1}`;
+        const perTree = (report.per_tree_CO2e_kg[index] || 0).toFixed(2);
+        const total = formatMass(report.total_CO2e_kg[index] || 0);
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${label}</td><td>${biomass}</td><td>${perTree}</td><td>${total}</td>`;
+        body.appendChild(row);
+      });
+    }
+
+    function populateAnnualTable(payload) {
+      const body = document.getElementById("annualTableBody");
+      body.innerHTML = "";
+      const report = payload.carbon_report.annual;
+      report.assumptions_annual_rate.forEach((rate, index) => {
+        const label = ANNUAL_LABELS[index] || `Level ${index + 1}`;
+        const perTree = (report.per_tree_CO2e_kg_per_year[index] || 0).toFixed(2);
+        const total = formatMass(report.total_CO2e_kg_per_year[index] || 0, true);
+        const descriptor = `${label} (${rate} kg C)`;
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${descriptor}</td><td>${perTree}</td><td>${total}</td>`;
+        body.appendChild(row);
+      });
+    }
+
+    function hydrateOxygenCard(payload) {
+      const panel = document.getElementById("oxygenPanel");
+      if (!panel) {
+        return;
+      }
+      const report = payload.oxygen_report;
+      if (!report) {
+        panel.style.display = "none";
+        return;
+      }
+
+      panel.style.display = "block";
+      const averageNode = document.getElementById("oxygenValue");
+      averageNode.textContent = formatMass(report.estimated_o2_average, true, { includeSuffix: false });
+
+      const range = report.estimated_o2_total_range || [0, 0];
+      const label = report.age_group ? report.age_group.charAt(0).toUpperCase() + report.age_group.slice(1) : "Mature";
+      const rangeNode = document.getElementById("oxygenRange");
+      rangeNode.textContent = `Estimated range (${label}): ${formatMass(range[0], true)} – ${formatMass(range[1], true)}`;
+
+      const statusNode = document.getElementById("oxygenStatus");
+      const status = determineOxygenStatus(report.estimated_o2_average);
+      statusNode.textContent = status.message;
+      statusNode.className = `oxygen-status ${status.className}`;
+    }
+
+    function hydratePmCard(payload) {
+      const panel = document.getElementById("pmPanel");
+      if (!panel) {
+        return;
+      }
+      const report = payload.pm_report;
+      const simple = report?.simple_method;
+      if (!simple) {
+        panel.style.display = "none";
+        return;
+      }
+
+      const treeCount = payload.tree_count ?? payload.count ?? payload.unique_tree_count ?? 0;
+      panel.style.display = "block";
+      const low = Number(simple.low_kg_per_year || 0);
+      const typical = Number(simple.typical_kg_per_year || 0);
+      const high = Number(simple.high_kg_per_year || 0);
+
+      document.getElementById("pmTreeCount").textContent = treeCount;
+      document.getElementById("pmLowEstimate").textContent = formatMass(low, true);
+      document.getElementById("pmTypicalEstimate").textContent = formatMass(typical, true);
+      document.getElementById("pmHighEstimate").textContent = formatMass(high, true);
+
+      const narrative = document.getElementById("pmNarrative");
+      const lowText = formatMass(low, true);
+      const highText = formatMass(high, true);
+      narrative.innerHTML = `The detected <b>${treeCount}</b> trees capture roughly <b>${lowText}</b> to <b>${highText}</b> of particulate matter each year.
+        These trees act as natural filters, reducing dust and urban pollution. Planting more medium or large canopy trees could further boost air-quality benefits.`;
+    }
+
+    function determineOxygenStatus(averageKg) {
+      const value = Number(averageKg) || 0;
+      if (value >= 1500) {
+        return {
+          className: "status-good",
+          message: "This amount of oxygen is healthy for the environment.",
+        };
+      }
+      if (value >= 500) {
+        return {
+          className: "status-warning",
+          message: "Moderate oxygen contribution. Planting more trees could boost air quality.",
+        };
+      }
+      return {
+        className: "status-low",
+        message: "Low oxygen impact detected. Consider increasing urban tree cover.",
+      };
+    }
+
+    function formatMass(value, perYear = false, options = {}) {
+      const magnitude = Number(value) || 0;
+      const includeSuffix = options.includeSuffix !== false;
+      if (magnitude >= 1000) {
+        const suffix = includeSuffix ? (perYear ? "/year" : "") : "";
+        return `${(magnitude / 1000).toFixed(2)} tonnes${suffix}`;
+      }
+      const rounded = magnitude >= 100 ? magnitude.toFixed(0) : magnitude.toFixed(2);
+      const suffix = includeSuffix ? (perYear ? "/year" : "") : "";
+      return `${rounded} kg${suffix}`;
+    }
+
+    function setupDownload(url) {
+      const anchor = document.getElementById("downloadResult");
+      if (!url) {
+        anchor.style.display = "none";
+        return;
+      }
+      anchor.href = url;
+      anchor.style.display = "inline-block";
+    }
+  </script>
+</body>
+</html>

@@ -14,6 +14,11 @@ from ultralytics import YOLO
 
 from app.core.config import Settings
 from app.core.jobs import JobStore
+from app.services.carbon import (
+    estimate_carbon_sequestration,
+    estimate_oxygen_output,
+    estimate_pm_capture,
+)
 
 
 class DetectionService:
@@ -72,6 +77,10 @@ class DetectionService:
         boxes = result.boxes.xyxy.cpu().numpy() if result.boxes is not None else []
         tree_count = len(boxes)
 
+        carbon_report = estimate_carbon_sequestration(tree_count)
+        oxygen_report = estimate_oxygen_output(tree_count)
+        pm_report = estimate_pm_capture(tree_count)
+
         annotated = rgb_image.copy()
         for (x1, y1, x2, y2) in boxes.astype(int):
             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -88,8 +97,12 @@ class DetectionService:
         return {
             "type": "image",
             "count": tree_count,
+            "tree_count": tree_count,
             "annotated_image_base64": f"data:image/png;base64,{encoded_img}",
             "output_image_url": f"/results/{output_path.name}",
+            "carbon_report": carbon_report,
+            "oxygen_report": oxygen_report,
+            "pm_report": pm_report,
         }
 
     def _process_video(self, job_id: str, path: Path) -> Dict[str, object]:
@@ -187,12 +200,20 @@ class DetectionService:
 
         avg_tree_count = unique_trees / max(frame_id, 1)
 
+        carbon_report = estimate_carbon_sequestration(unique_trees)
+        oxygen_report = estimate_oxygen_output(unique_trees)
+        pm_report = estimate_pm_capture(unique_trees)
+
         return {
             "type": "video",
             "frames_processed": frame_id,
             "unique_tree_count": unique_trees,
+            "tree_count": unique_trees,
             "avg_tree_count": avg_tree_count,
             "output_video_url": f"/results/{output_path.name}",
+            "carbon_report": carbon_report,
+            "oxygen_report": oxygen_report,
+            "pm_report": pm_report,
         }
 
     def _write_image(self, job_id: str, source_path: Path, image) -> Path:

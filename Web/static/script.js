@@ -13,12 +13,15 @@ const elements = {
   countTag: document.getElementById("count"),
   progressBar: document.getElementById("progressBar"),
   statusLabel: document.getElementById("statusLabel"),
+  analysisBtn: document.getElementById("analysisBtn"),
 };
 
 const state = {
   currentPreviewUrl: null,
   eventSource: null,
 };
+
+const ANALYSIS_STORAGE_KEY = "treesenseUrbanResult";
 
 function init() {
   if (!elements.dropzone || !elements.startBtn) {
@@ -34,6 +37,15 @@ function init() {
 
   elements.startBtn.addEventListener("click", startDetection);
   elements.clearBtn.addEventListener("click", clearAll);
+
+  if (elements.analysisBtn) {
+    elements.analysisBtn.addEventListener("click", handleAnalysisNavigation);
+    if (hasStoredAnalysis()) {
+      enableAnalysisButton();
+    } else {
+      disableAnalysisButton();
+    }
+  }
 }
 
 function handleDragOver(event) {
@@ -92,6 +104,10 @@ function clearAll() {
   elements.previewImg.style.display = "none";
   elements.previewVideo.style.display = "none";
   resetOutputPanel();
+  if (window.sessionStorage) {
+    sessionStorage.removeItem(ANALYSIS_STORAGE_KEY);
+  }
+  disableAnalysisButton();
 }
 
 function resetOutputPanel(hidePanel = true) {
@@ -136,6 +152,7 @@ async function startDetection() {
   elements.outputPanel.style.display = "flex";
   resetOutputPanel(false);
   elements.startBtn.disabled = true;
+  disableAnalysisButton();
   setStatus("Uploading...");
   logMessage("Uploading file...");
 
@@ -230,6 +247,9 @@ async function fetchResult(jobId) {
     logMessage("Unexpected result payload received.");
   }
 
+  storeAnalysisPayload(payload);
+  enableAnalysisButton();
+
   logMessage("✅ Detection complete!");
   setStatus("Done");
   elements.startBtn.disabled = false;
@@ -259,6 +279,59 @@ function setupDownload(url, filename) {
   elements.downloadLink.href = url;
   elements.downloadLink.download = filename;
   elements.downloadLink.style.display = "inline-block";
+}
+
+function handleAnalysisNavigation() {
+  if (!hasStoredAnalysis()) {
+    alert("Run a detection to generate analysis first.");
+    return;
+  }
+  window.location.href = "/urbananalysis";
+}
+
+function storeAnalysisPayload(payload) {
+  if (!window.sessionStorage) {
+    return;
+  }
+  try {
+    const enriched = {
+      ...payload,
+      stored_at: new Date().toISOString(),
+    };
+    sessionStorage.setItem(ANALYSIS_STORAGE_KEY, JSON.stringify(enriched));
+  } catch (error) {
+    console.warn("Unable to persist analysis payload", error);
+  }
+}
+
+function enableAnalysisButton() {
+  if (!elements.analysisBtn) {
+    return;
+  }
+  elements.analysisBtn.disabled = false;
+  elements.analysisBtn.classList.remove("hidden");
+  elements.analysisBtn.style.display = "inline-flex";
+}
+
+function disableAnalysisButton() {
+  if (!elements.analysisBtn) {
+    return;
+  }
+  elements.analysisBtn.disabled = true;
+  elements.analysisBtn.classList.add("hidden");
+  elements.analysisBtn.style.display = "none";
+}
+
+function hasStoredAnalysis() {
+  if (!window.sessionStorage) {
+    return false;
+  }
+  try {
+    return Boolean(sessionStorage.getItem(ANALYSIS_STORAGE_KEY));
+  } catch (error) {
+    console.warn("Unable to read stored analysis", error);
+    return false;
+  }
 }
 
 function handleError(message) {
