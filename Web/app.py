@@ -83,8 +83,17 @@ def run_detection_sync(job_id: str, path: str):
             return
 
         # ---------------- VIDEO ----------------
-        cap = cv2.VideoCapture(str(path), cv2.CAP_FFMPEG)
+        # Try opening the video with default backend first; if that fails, try FFMPEG backend
+        cap = cv2.VideoCapture(str(path))
         if not cap.isOpened():
+            JOBS[job_id]["logs"].append("Initial VideoCapture failed, retrying with CAP_FFMPEG...")
+            cap = cv2.VideoCapture(str(path), cv2.CAP_FFMPEG)
+        if not cap.isOpened():
+            exists = os.path.exists(str(path))
+            size = os.path.getsize(str(path)) if exists else 0
+            JOBS[job_id]["logs"].append(
+                f"Could not open video. Path: {str(path)!r}, exists={exists}, size={size} bytes"
+            )
             raise RuntimeError("Could not open video.")
 
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -101,7 +110,8 @@ def run_detection_sync(job_id: str, path: str):
         fps = cap.get(cv2.CAP_PROP_FPS) or 20.0
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        writer = cv2.VideoWriter(str(output_path), fourcc, fps, (width, height), apiPreference=cv2.CAP_FFMPEG)
+        # Create writer (use default backend; letting OpenCV pick best available)
+        writer = cv2.VideoWriter(str(output_path), fourcc, fps, (width, height))
         if not writer.isOpened():
             raise RuntimeError("Failed to open video writer.")
 
