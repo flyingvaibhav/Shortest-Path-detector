@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TreeSense — DualSystem</title>
+  <style>
+    :root{
+      --bg:#050706; /* near-black */
+      --panel:#0b1a11; /* dark green-black */
+      --accent:#2ee06a; /* bright green */
+      --muted:#94caa4;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg) 0%, #06120a 100%);color:var(--muted)}
+    .center-wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px}
+    .card{width:960px;max-width:95%;background:linear-gradient(180deg,var(--panel),rgba(0,0,0,0.2));border-radius:14px;padding:40px;box-shadow:0 10px 40px rgba(0,0,0,0.6);backdrop-filter:blur(6px);border:1px solid rgba(46,224,106,0.06)}
+    .title{display:flex;align-items:center;gap:16px}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#0ab24a);display:flex;align-items:center;justify-content:center;color:#02220f;font-weight:700;font-size:20px;box-shadow:0 6px 18px rgba(46,224,106,0.12)}
+    h1{margin:0;font-size:34px;color:var(--accent);letter-spacing:0.4px}
+    p.lead{margin:8px 0 24px;color:var(--muted);font-size:16px}
+
+    /* floating buttons center */
+    .modes{display:flex;gap:28px;justify-content:center;align-items:center;margin-top:18px}
+    .mode-btn{position:relative;width:220px;height:220px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:transform .28s ease, box-shadow .28s ease}
+    .mode-btn:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+    .mode-btn .label{margin-top:12px;font-weight:700;color:var(--accent)}
+    .mode-btn .sub{font-size:13px;color:var(--muted);margin-top:6px}
+
+    .mode-jungle{background:radial-gradient(circle at 30% 20%, rgba(46,224,106,0.06), transparent 25%), linear-gradient(180deg,#07140b,#021006)}
+    .mode-urban{background:radial-gradient(circle at 70% 80%, rgba(46,224,106,0.05), transparent 30%), linear-gradient(180deg,#081217,#031015)}
+
+    .cta-row{display:flex;justify-content:center;margin-top:30px}
+    .small{font-size:13px;color:rgba(148,202,164,0.9)}
+
+    /* floating center container for the two buttons */
+    .floating{display:flex;gap:28px;align-items:center;justify-content:center}
+
+    @media (max-width:640px){.modes{flex-direction:column}.mode-btn{width:160px;height:160px}}
+  </style>
+</head>
+<body>
+  <div class="center-wrap">
+    <div class="card">
+      <div class="title">
+        <div class="logo">TS</div>
+        <div>
+          <h1>TreeSense</h1>
+          <p class="lead">DualSystem for enviornment monitoring <strong>#natures doctor</strong></p>
+        </div>
+      </div>
+
+      <p class="small">Choose a mode to continue. <em>Jungle Mode</em> focuses on dense natural settings. <em>Urban Mode</em> switches to the tree detection interface.</p>
+
+      <div class="modes">
+        <div class="mode-btn mode-jungle" id="jungleBtn" title="Jungle Mode">
+          <svg width="58" height="58" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C12 2 9 7 6 9C3 11 4 12 4 12H20C20 12 21 11 18 9C15 7 12 2 12 2Z" fill="#8ef0a6" opacity="0.95"/><path d="M6 20C6 20 8 16 12 16C16 16 18 20 18 20H6Z" fill="#2ee06a"/></svg>
+          <div class="label">Jungle Mode</div>
+          <div class="sub">Nature-oriented</div>
+        </div>
+
+        <div class="mode-btn mode-urban" id="urbanBtn" title="Urban Mode">
+          <svg width="58" height="58" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="7" width="4" height="10" rx="0.5" fill="#8ef0a6"/><rect x="10" y="4" width="4" height="13" rx="0.5" fill="#2ee06a"/><rect x="17" y="9" width="4" height="8" rx="0.5" fill="#7fe89a"/></svg>
+          <div class="label">Urban Mode</div>
+          <div class="sub">Tree Detection</div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <div class="small">Built with YOLO — quick, privacy-friendly detection.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Urban Mode redirects to /detect (existing detection page)
+    document.getElementById('urbanBtn').addEventListener('click', ()=>{
+      window.location.href = '/detect';
+    });
+
+    // Jungle Mode is currently informational; you can extend it later
+    document.getElementById('jungleBtn').addEventListener('click', ()=>{
+      // small feedback effect
+      const el = document.getElementById('jungleBtn');
+      el.style.transform = 'scale(0.98)';
+      setTimeout(()=> el.style.transform = '', 120);
+      alert('Jungle Mode selected — feature coming soon.');
+    });
+  </script>
+</body>
+</html>
