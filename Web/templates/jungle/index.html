@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TreeSense · Jungle Mode</title>
+  <style>
+    body{font-family:Inter,Segoe UI,system-ui,sans-serif;background:#050706;color:#e8f6ed;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .panel{background:rgba(7,18,11,0.92);border:1px solid rgba(46,224,106,0.18);border-radius:18px;padding:36px;width:680px;max-width:100%;box-shadow:0 18px 60px rgba(0,0,0,0.65)}
+    h1{margin:0 0 10px;color:#2ee06a;font-size:32px}
+    p{margin:0 0 18px;color:#9bcdaa}
+    form{margin-top:24px;border:1px dashed rgba(46,224,106,0.4);border-radius:12px;padding:32px;text-align:center;display:flex;flex-direction:column;gap:18px}
+    input[type=file]{color:#cbe9d7}
+    button{border:none;background:#2ee06a;color:#011a0d;font-weight:700;font-size:16px;padding:12px 26px;border-radius:999px;cursor:pointer}
+    button:hover{box-shadow:0 10px 30px rgba(46,224,106,0.35)}
+    a{color:#9bcdaa;text-decoration:none}
+    .actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Jungle Mode · A* Pathfinder</h1>
+    <p>Upload a high-resolution canopy shot to explore the least intrusive route between two manually selected points. The system identifies vegetation, builds a traversal cost-map, and animates the A* exploration.</p>
+
+    <form action="/jungle/upload" method="post" enctype="multipart/form-data">
+      <label for="image">Select a forest or park aerial image</label>
+      <input id="image" name="image" type="file" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff" required />
+      <button type="submit">Continue to Point Selection</button>
+    </form>
+
+    <div class="actions">
+      <a href="/">← Back to DualSystem</a>
+      <small>Need the detector? <a href="/detect">Open Urban Mode</a></small>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pathfinding… · Jungle Mode</title>
+  <style>
+    body{margin:0;font-family:Inter,Segoe UI,system-ui,sans-serif;background:#020706;color:#e0f5e7;min-height:100vh;padding:20px}
+    .shell{max-width:1200px;margin:0 auto}
+    h1{color:#2ee06a;margin-bottom:6px}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:22px}
+    .panel{background:rgba(4,12,8,0.96);border:1px solid rgba(46,224,106,0.25);border-radius:16px;padding:18px;box-shadow:0 12px 36px rgba(0,0,0,0.55)}
+    img{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,0.08)}
+    pre{background:#050d08;border-radius:12px;padding:12px;max-height:460px;overflow:auto;font-family:Consolas,monospace;font-size:13px;white-space:pre-wrap}
+    .status{margin:12px 0;font-size:14px;color:#9cc9ab}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,0.06)}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <h1>Animating search…</h1>
+    <div class="status">Job ID: <code>{{ jobId }}</code></div>
+    <div class="grid">
+      <div class="panel">
+        <img id="frame" src="/jungle/image/{{ jobId }}/current.png?ts={{ ts }}" alt="Current frame" />
+        <div class="pill" id="phase">Waiting for frames…</div>
+      </div>
+      <div class="panel">
+        <strong>Live logs</strong>
+        <pre id="logs">Connecting…</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const jobId = "{{ jobId }}";
+    const frameEl = document.getElementById('frame');
+    const logsEl = document.getElementById('logs');
+    const phaseEl = document.getElementById('phase');
+
+    function appendLog(message){
+      const ts = new Date().toLocaleTimeString();
+      logsEl.textContent += `\n[${ts}] ${message}`;
+      logsEl.scrollTop = logsEl.scrollHeight;
+    }
+
+    function refreshFrame(){
+      frameEl.src = `/jungle/image/${jobId}/current.png?ts=${Date.now()}`;
+    }
+
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsUrl = `${wsProtocol}://${window.location.host}/jungle/ws/${jobId}`;
+    let ws;
+    try{
+      ws = new WebSocket(wsUrl);
+    }catch(err){
+      appendLog('WebSocket init failed, falling back to polling.');
+    }
+
+    if(ws){
+      ws.onmessage = (event)=>{
+        try{
+          const data = JSON.parse(event.data);
+          if(data.type === 'log'){
+            appendLog(data.msg);
+          }else if(data.type === 'frame'){
+            refreshFrame();
+            phaseEl.textContent = 'Exploring…';
+          }else if(data.type === 'done'){
+            phaseEl.textContent = 'Finalizing';
+            setTimeout(checkStatus, 1200);
+          }
+        }catch(err){
+          appendLog('Malformed WS payload.');
+        }
+      };
+      ws.onerror = ()=> appendLog('WebSocket error, will keep trying.');
+    }
+
+    async function checkStatus(){
+      try{
+        const res = await fetch(`/jungle/status/${jobId}`);
+        if(!res.ok){
+          appendLog('Status check failed.');
+          return;
+        }
+        const data = await res.json();
+        if(data.error){
+          appendLog(`Error: ${data.error}`);
+          phaseEl.textContent = 'Errored';
+          return;
+        }
+        if(data.done){
+          phaseEl.textContent = 'Completed';
+          window.location.href = `/jungle/result/${jobId}`;
+        }
+      }catch(err){
+        appendLog('Status fetch failed.');
+      }
+    }
+
+    setInterval(checkStatus, 2500);
+  </script>
+</body>
+</html>

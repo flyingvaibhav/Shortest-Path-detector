@@ -79,13 +79,14 @@
       window.location.href = '/detect';
     });
 
-    // Jungle Mode is currently informational; you can extend it later
+    // Jungle Mode now navigates to the path planning workflow
     document.getElementById('jungleBtn').addEventListener('click', ()=>{
-      // small feedback effect
       const el = document.getElementById('jungleBtn');
-      el.style.transform = 'scale(0.98)';
-      setTimeout(()=> el.style.transform = '', 120);
-      alert('Jungle Mode selected — feature coming soon.');
+      el.style.transform = 'scale(0.94)';
+      setTimeout(()=>{
+        el.style.transform = '';
+        window.location.href = '/jungle';
+      }, 120);
     });
   </script>
 </body>

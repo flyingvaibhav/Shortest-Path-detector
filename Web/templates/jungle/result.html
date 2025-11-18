@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Results · Jungle Mode</title>
+  <style>
+    body{margin:0;font-family:Inter,Segoe UI,system-ui,sans-serif;background:#010604;color:#e1f6e7;min-height:100vh;padding:28px}
+    .shell{max-width:1200px;margin:0 auto}
+    h1{color:#2ee06a;margin-bottom:6px}
+    p{color:#98cbaa}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;margin-top:24px}
+    .card{background:rgba(5,13,9,0.96);border:1px solid rgba(46,224,106,0.25);border-radius:16px;padding:18px;box-shadow:0 16px 45px rgba(0,0,0,0.6)}
+    img{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,0.09)}
+    a.btn{display:inline-flex;align-items:center;justify-content:center;width:100%;margin-top:12px;padding:12px;border-radius:999px;text-decoration:none;font-weight:700;background:#2ee06a;color:#041307}
+    a.btn.secondary{background:rgba(46,224,106,0.1);color:#d6f0e1;border:1px solid rgba(46,224,106,0.3)}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <h1>Jungle Mode Complete</h1>
+    <p>Review the generated overlays and download the mp4 animation to share the exploration.</p>
+
+    <div class="cards">
+      {% if summaryAvailable %}
+      <div class="card">
+        <h3>Path summary</h3>
+        <img src="/jungle/summary/{{ jobId }}.png?ts={{ ts }}" alt="Summary" />
+        <a class="btn secondary" href="/jungle/summary/{{ jobId }}.png" download="{{ jobId }}_summary.png">Download PNG</a>
+      </div>
+      {% else %}
+      <div class="card"><p>No summary image was generated.</p></div>
+      {% endif %}
+
+      {% if videoAvailable %}
+      <div class="card">
+        <h3>Exploration video</h3>
+        <video controls muted style="width:100%;border-radius:12px">
+          <source src="/jungle/stream/video/{{ jobId }}?ts={{ ts }}" type="video/mp4" />
+        </video>
+        <a class="btn" href="/jungle/video/{{ jobId }}.mp4" download="{{ jobId }}.mp4">Download MP4</a>
+      </div>
+      {% else %}
+      <div class="card"><p>Video export unavailable for this run.</p></div>
+      {% endif %}
+    </div>
+
+    <div style="margin-top:32px;display:flex;gap:16px;flex-wrap:wrap">
+      <a class="btn secondary" href="/jungle">Run another path</a>
+      <a class="btn secondary" href="/">Back to DualSystem Home</a>
+    </div>
+  </div>
+</body>
+</html>

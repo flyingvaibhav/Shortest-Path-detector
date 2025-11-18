@@ -7,14 +7,17 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.api.routes import router as api_router
+from app.api.jungle import router as jungle_router
 from app.core.config import get_settings
 from app.core.jobs import JobStore
 from app.services.detection import DetectionService
+from app.services.jungle_pipeline import JungleJobStore
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
     job_store = JobStore()
+    jungle_store = JungleJobStore(settings.base_dir / "BestPath-JungleMode")
     detection_service = DetectionService(settings, job_store)
 
     app = FastAPI(title=settings.app_name)
@@ -25,10 +28,12 @@ def create_app() -> FastAPI:
 
     app.state.settings = settings
     app.state.job_store = job_store
+    app.state.jungle_store = jungle_store
     app.state.detections = detection_service
     app.state.templates = templates
 
     app.include_router(api_router)
+    app.include_router(jungle_router)
 
     return app
 

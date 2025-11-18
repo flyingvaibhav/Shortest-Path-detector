@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Select Start & Goal · Jungle Mode</title>
+  <style>
+    body{margin:0;font-family:Inter,Segoe UI,system-ui,sans-serif;background:#030806;color:#d7f0de;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .layout{max-width:1100px;width:100%;display:grid;grid-template-columns:2fr 1fr;gap:24px}
+    .panel{background:rgba(6,15,10,0.95);border:1px solid rgba(46,224,106,0.25);border-radius:16px;padding:24px;box-shadow:0 12px 40px rgba(0,0,0,0.55)}
+    h1{margin:0 0 6px;color:#2ee06a}
+    p{margin:0 0 18px;color:#9fcda9}
+    img{width:100%;border-radius:14px;cursor:crosshair;border:1px solid rgba(255,255,255,0.08)}
+    .tag{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(46,224,106,0.18);color:#bef0cc;font-size:13px}
+    form{display:flex;flex-direction:column;gap:18px}
+    label{font-size:13px;text-transform:uppercase;letter-spacing:0.08em;color:#8fb799}
+    input[type=number],input[type=range]{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(46,224,106,0.2);background:rgba(255,255,255,0.02);color:#e9f7ec}
+    button{border:none;border-radius:999px;padding:12px 24px;font-weight:700;background:#2ee06a;color:#041307;cursor:pointer}
+    .coords{font-family:Consolas,monospace;font-size:14px;color:#fefefe}
+    .actions{display:flex;justify-content:space-between;align-items:center}
+    @media(max-width:960px){.layout{grid-template-columns:1fr}.actions{flex-direction:column;gap:12px}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="panel">
+      <h1>Pick start → goal</h1>
+      <p>Click anywhere on the image. First click sets the <strong>start</strong>, second click sets the <strong>goal</strong>. Use the toggle below to redo either point. Coordinates auto-fill the form.</p>
+      <div style="margin-bottom:14px;display:flex;gap:12px;align-items:center">
+        <span class="tag" id="modeTag">Assigning: START</span>
+        <button type="button" id="toggleMode" style="padding:6px 14px;font-size:13px;background:rgba(255,255,255,0.08);color:#c9e8d5">Switch target</button>
+      </div>
+      <img id="baseImage" src="/jungle/image/{{ jobId }}/base.png?ts={{ ts }}" alt="Uploaded canopy" />
+    </div>
+
+    <div class="panel">
+      <form method="post" action="/jungle/start" id="pointForm">
+        <input type="hidden" name="jobId" value="{{ jobId }}" />
+        <div>
+          <label>Start (row, col)</label>
+          <div class="coords" id="startCoords">—</div>
+          <div style="display:flex;gap:12px">
+            <input type="number" id="startY" name="startY" placeholder="Row" required />
+            <input type="number" id="startX" name="startX" placeholder="Column" required />
+          </div>
+        </div>
+        <div>
+          <label>Goal (row, col)</label>
+          <div class="coords" id="goalCoords">—</div>
+          <div style="display:flex;gap:12px">
+            <input type="number" id="goalY" name="goalY" placeholder="Row" required />
+            <input type="number" id="goalX" name="goalX" placeholder="Column" required />
+          </div>
+        </div>
+        <div>
+          <label>Expansions per frame · <span id="expansionsLabel">25</span></label>
+          <input type="range" id="expansions" name="expansionsPerFrame" min="5" max="80" step="5" value="25" />
+        </div>
+        <div class="actions">
+          <a href="/jungle" style="color:#9fcda9;text-decoration:none">← Upload another image</a>
+          <button type="submit" id="startBtn" disabled>Launch Pathfinder</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const img = document.getElementById('baseImage');
+    const toggleBtn = document.getElementById('toggleMode');
+    const modeTag = document.getElementById('modeTag');
+    const startY = document.getElementById('startY');
+    const startX = document.getElementById('startX');
+    const goalY = document.getElementById('goalY');
+    const goalX = document.getElementById('goalX');
+    const startCoords = document.getElementById('startCoords');
+    const goalCoords = document.getElementById('goalCoords');
+    const startBtn = document.getElementById('startBtn');
+    const expansions = document.getElementById('expansions');
+    const expansionsLabel = document.getElementById('expansionsLabel');
+
+    let mode = 'start';
+
+    function updateButtonState(){
+      startBtn.disabled = !(startY.value && startX.value && goalY.value && goalX.value);
+    }
+
+    function setMode(newMode){
+      mode = newMode;
+      modeTag.textContent = `Assigning: ${mode.toUpperCase()}`;
+    }
+
+    img.addEventListener('click', (event)=>{
+      const rect = img.getBoundingClientRect();
+      const scaleX = img.naturalWidth / rect.width;
+      const scaleY = img.naturalHeight / rect.height;
+      const col = Math.round((event.clientX - rect.left) * scaleX);
+      const row = Math.round((event.clientY - rect.top) * scaleY);
+      if(mode === 'start'){
+        startY.value = row;
+        startX.value = col;
+        startCoords.textContent = `(${row}, ${col})`;
+        setMode('goal');
+      }else{
+        goalY.value = row;
+        goalX.value = col;
+        goalCoords.textContent = `(${row}, ${col})`;
+        setMode('start');
+      }
+      updateButtonState();
+    });
+
+    toggleBtn.addEventListener('click', ()=>{
+      setMode(mode === 'start' ? 'goal' : 'start');
+    });
+
+    [startY, startX, goalY, goalX].forEach((input)=>{
+      input.addEventListener('input', ()=>{
+        if(input === startY || input === startX){
+          startCoords.textContent = `(${startY.value || '?'}, ${startX.value || '?'})`;
+        }else{
+          goalCoords.textContent = `(${goalY.value || '?'}, ${goalX.value || '?'})`;
+        }
+        updateButtonState();
+      });
+    });
+
+    expansions.addEventListener('input', ()=>{
+      expansionsLabel.textContent = expansions.value;
+    });
+  </script>
+</body>
+</html>
