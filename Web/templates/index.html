@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -8,118 +8,118 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-  <script>
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            forest: {
-              50: '#e8fff5',
-              100: '#c9ffe6',
-              200: '#8cf6c2',
-              400: '#2ee06a',
-              500: '#12b155',
-            },
-            night: {
-              900: '#010302',
-              800: '#020806',
-              700: '#04140c',
-            }
-          }
-        }
-      }
-    };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body{
-      font-family:"Inter",Segoe UI,system-ui,-apple-system,Helvetica,Arial,sans-serif;
-      min-height:100vh;
-      background:radial-gradient(circle at top,#0c2818 0%,rgba(3,8,6,0) 45%),#030a06;
-      color:#e4f9ec;
-    }
-    .noise-layer{background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,0.08) 1px,transparent 0);background-size:4px 4px;opacity:0.08;mix-blend-mode:screen}
-  </style>
+  <link rel="stylesheet" href="/static/theme.css" />
 </head>
-<body class="min-h-screen bg-gradient-to-b from-night-900 via-night-800 to-night-700 text-emerald-100">
-  <div class="noise-layer fixed inset-0"></div>
-  <main class="relative z-10 flex min-h-screen items-center justify-center px-6 py-16">
-    <section class="w-full max-w-5xl rounded-3xl border border-white/10 bg-white/5 p-10 shadow-2xl backdrop-blur-xl">
-      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex items-center gap-4">
-          <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-forest-400 to-forest-500 text-xl font-black text-night-900 shadow-lg shadow-forest-500/30">TS</div>
+<body class="page-shell" style="background: radial-gradient(circle at top,#0b2c18,transparent 50%), var(--bg-night-900);">
+  <div class="noise-layer" aria-hidden="true"></div>
+  <main class="app-shell" style="padding: clamp(2rem,4vw,4rem); max-width: 1200px;">
+    <header class="glass-card" style="position: relative; overflow: hidden;">
+      <div style="position:absolute;inset:0;opacity:0.3;background: radial-gradient(circle at 20% 20%,rgba(46,224,106,0.35),transparent 55%);"></div>
+      <div style="position:relative;display:flex;flex-direction:column;gap:1.5rem;">
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;">
           <div>
-            <p class="text-sm uppercase tracking-[0.3em] text-emerald-400/80">DualSystem</p>
-            <h1 class="text-4xl font-semibold text-forest-200">TreeSense</h1>
-            <p class="text-sm text-emerald-200/80">Jungle intelligence + Urban detection • #naturesDoctor</p>
+            <span class="tag-pill">DualSystem Suite</span>
+            <h1 class="section-heading" style="margin-top:0.25rem;">TreeSense</h1>
+            <p class="section-subtext">Guided jungle traversals and instant urban detections powered by YOLOv8, ESG estimators, and respectful path planning.</p>
+          </div>
+          <a href="/detect" class="btn-pill btn-primary" style="text-align:center;">Launch Detector</a>
+        </div>
+        <div class="grid-auto">
+          <div class="stat-chip">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.3em;color:var(--text-muted);">Label Library</div>
+            <div style="font-size:1.75rem;font-weight:600;">12k+</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Tree-Top-View assets baked in.</p>
+          </div>
+          <div class="stat-chip">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.3em;color:var(--text-muted);">ESG Metrics</div>
+            <div style="font-size:1.75rem;font-weight:600;">CO₂ + O₂</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Instant sequestration reporting.</p>
+          </div>
+          <div class="stat-chip">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.3em;color:var(--text-muted);">Live Modes</div>
+            <div style="font-size:1.75rem;font-weight:600;">Jungle · Urban</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Switch depending on the mission.</p>
           </div>
         </div>
-        <a href="/detect" class="btn btn-outline-success text-uppercase tracking-wide">Quick Jump to Detector</a>
       </div>
+    </header>
 
-      <p class="mt-6 max-w-3xl text-base text-emerald-100/80">
-        Pick the mode that matches your mission. Jungle Mode plans respectful traversals through dense greens, while Urban Mode counts trees instantly using YOLO-driven perception.
-      </p>
+    <section class="grid-auto" style="margin-top:2rem;">
+      <button id="jungleBtn" type="button" class="glass-card card-accent" style="text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:1rem;">
+        <div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;">
+          <div>
+            <p class="tag-pill" style="padding:0.3rem 0.75rem;">Mode 01</p>
+            <h2 style="margin:0.75rem 0 0;font-size:2rem;">Jungle Mode</h2>
+            <p class="section-subtext" style="margin-top:0.5rem;">Upload a canopy raster, set start and goal points, then watch the A* exploration respect vegetation density.</p>
+          </div>
+          <div style="padding:1rem;border-radius:50%;background:rgba(255,255,255,0.05);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2s-3 5-6 7-2 3-2 3h16s1-1-2-3-6-7-6-7Z" fill="#7ff0b2" opacity="0.9"/>
+              <path d="M6 20s2-4 6-4 6 4 6 4H6Z" fill="#2ee06a"/>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-grid" style="margin-top:0.75rem;">
+          <div class="stat-chip">
+            <strong style="display:block;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.3em;color:var(--text-muted);">Planner</strong>
+            <span style="font-size:1.15rem;font-weight:600;">A* + ExG mask</span>
+          </div>
+          <div class="stat-chip">
+            <strong style="display:block;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.3em;color:var(--text-muted);">Outputs</strong>
+            <span style="font-size:1.15rem;font-weight:600;">PNG · MP4</span>
+          </div>
+        </div>
+      </button>
 
-      <div class="mt-10 grid gap-8 md:grid-cols-2">
-        <button id="jungleBtn" class="group relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-8 text-left shadow-xl transition duration-300 hover:-translate-y-1 hover:border-forest-400/60">
-          <div class="absolute inset-0 opacity-0 transition group-hover:opacity-100" aria-hidden="true">
-            <div class="h-full w-full bg-gradient-to-br from-forest-500/40 via-transparent to-forest-200/20"></div>
+      <button id="urbanBtn" type="button" class="glass-card" style="text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:1rem;">
+        <div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;">
+          <div>
+            <p class="tag-pill" style="padding:0.3rem 0.75rem;">Mode 02</p>
+            <h2 style="margin:0.75rem 0 0;font-size:2rem;">Urban Mode</h2>
+            <p class="section-subtext" style="margin-top:0.5rem;">Direct YOLOv8 inference for streetscapes, UAV flyovers, or archived footage with ESG add-ons.</p>
           </div>
-          <div class="relative z-10 flex items-center justify-between">
-            <div>
-              <p class="text-sm uppercase tracking-[0.4em] text-forest-200/70">Mode 01</p>
-              <h2 class="mt-2 text-3xl font-semibold text-forest-100">Jungle Mode</h2>
-              <p class="mt-3 text-sm text-emerald-100/80">A* driven path planner, vegetation masks, respectful traversal insights.</p>
-            </div>
-            <div class="rounded-full bg-forest-400/20 p-4 text-forest-50">
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 9 7 6 9C3 11 4 12 4 12H20C20 12 21 11 18 9C15 7 12 2 12 2Z" fill="#8ef0a6" opacity="0.95"/>
-                <path d="M6 20C6 20 8 16 12 16C16 16 18 20 18 20H6Z" fill="#2ee06a"/>
-              </svg>
-            </div>
+          <div style="padding:1rem;border-radius:50%;background:rgba(255,255,255,0.05);">
+            <svg width="58" height="58" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="7" width="4" height="10" rx="0.5" fill="#8ef0a6"/>
+              <rect x="10" y="4" width="4" height="13" rx="0.5" fill="#2ee06a"/>
+              <rect x="17" y="9" width="4" height="8" rx="0.5" fill="#7fe89a"/>
+            </svg>
           </div>
-          <div class="relative z-10 mt-6 flex items-center gap-3 text-sm text-forest-200">
-            <span class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs uppercase tracking-widest text-emerald-200/80">
-              <span class="h-2 w-2 rounded-full bg-forest-400"></span>A* Pathfinder
-            </span>
-            <span>Upload aerial imagery → select route points.</span>
-          </div>
-        </button>
+        </div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.6rem;color:var(--text-muted);font-size:0.95rem;">
+          <li>• Drag & drop imagery or MP4/MOV footage.</li>
+          <li>• Watch SSE logs update in realtime.</li>
+          <li>• Export annotated assets + ESG report.</li>
+        </ul>
+      </button>
+    </section>
 
-        <button id="urbanBtn" class="group relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-8 text-left shadow-xl transition duration-300 hover:-translate-y-1 hover:border-forest-400/60">
-          <div class="absolute inset-0 opacity-0 transition group-hover:opacity-100" aria-hidden="true">
-            <div class="h-full w-full bg-gradient-to-br from-forest-500/40 via-transparent to-forest-200/20"></div>
+    <section class="glass-card" style="margin-top:2rem;">
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        <div>
+          <h3 style="margin:0;font-size:1.5rem;">Workflow at a glance</h3>
+          <p class="section-subtext" style="margin-top:0.5rem;">Pick a mode, upload evidence, and TreeSense routes detections through GPUs and sustainability estimators automatically.</p>
+        </div>
+        <div class="grid-auto">
+          <div class="stat-chip">
+            <strong style="display:block;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--text-muted);">01 · Capture</strong>
+            <span style="font-size:1.05rem;">Aerial canopy, drone flyover, or dashcam clip.</span>
           </div>
-          <div class="relative z-10 flex items-center justify-between">
-            <div>
-              <p class="text-sm uppercase tracking-[0.4em] text-forest-200/70">Mode 02</p>
-              <h2 class="mt-2 text-3xl font-semibold text-forest-100">Urban Mode</h2>
-              <p class="mt-3 text-sm text-emerald-100/80">Instant tree counts, bounding boxes, YOLO-powered mapping.</p>
-            </div>
-            <div class="rounded-full bg-forest-400/20 p-4 text-forest-50">
-              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="7" width="4" height="10" rx="0.5" fill="#8ef0a6"/>
-                <rect x="10" y="4" width="4" height="13" rx="0.5" fill="#2ee06a"/>
-                <rect x="17" y="9" width="4" height="8" rx="0.5" fill="#7fe89a"/>
-              </svg>
-            </div>
+          <div class="stat-chip">
+            <strong style="display:block;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--text-muted);">02 · Detect</strong>
+            <span style="font-size:1.05rem;">YOLOv8 quantifies trees + tracks unique crowns.</span>
           </div>
-          <div class="relative z-10 mt-6 flex items-center gap-3 text-sm text-forest-200">
-            <span class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs uppercase tracking-widest text-emerald-200/80">
-              <span class="h-2 w-2 rounded-full bg-forest-400"></span>YOLOv8
-            </span>
-            <span>Upload imagery or footage → analyze instantly.</span>
+          <div class="stat-chip">
+            <strong style="display:block;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--text-muted);">03 · Report</strong>
+            <span style="font-size:1.05rem;">ESG panels estimate carbon, oxygen, and PM capture.</span>
           </div>
-        </button>
-      </div>
-
-      <div class="mt-10 flex flex-wrap items-center justify-between gap-4 text-sm text-emerald-200/70">
-        <p>Built with YOLO · Privacy-friendly · GPU-ready workflows.</p>
-        <div class="flex items-center gap-2">
-          <span class="h-2 w-2 animate-pulse rounded-full bg-forest-400"></span>
-          <span>Realtime ready</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;color:var(--text-muted);font-size:0.9rem;">
+          <div>GPU aware · Privacy friendly · Works offline once weights are cached.</div>
+          <div style="display:flex;align-items:center;gap:0.4rem;font-weight:600;color:var(--accent);">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.6s infinite;"></span>
+            Realtime ready
+          </div>
         </div>
       </div>
     </section>
